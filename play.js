@@ -1,5 +1,6 @@
-const {connect} = require("./client");
+const {connect, setupInput} = require("./client");
 const client = connect();
+const stdin = setupInput();
 
 client.on("connect", () => {
   setInterval(() => {client.write()}, 1000);
@@ -12,13 +13,43 @@ client.on("data", (data) => {
 
 // setup interface to handle user input from stdin
 
-const setupInput = function () {
-  const stdin = process.stdin;
-  stdin.setRawMode(true);
-  stdin.setEncoding("utf8");
-  stdin.resume();
-  return stdin;
+
+
+const handleUserInput = function (key) {
+  // your code here
+  let outPut = "";
+  const t = 200;
+  client.on("connect", () => {
+    if (key === '\u0003') {
+      client.end();
+      console.log("Connection terminated ......")
+      process.exit();
+      } else if (key === '38') {    
+      setInterval(() => {client.write("Move: up")}, t);
+      // client.on("connect", () => {
+      // });
+      } else if (key === '40') {    
+      setInterval(() => {client.write("Move: down")}, t);      
+      // client.on("connect", () => {
+      // });
+      } else if (key === '39') {    
+      setInterval(() => {client.write("Move: right")}, t);
+      // client.on("connect", () => {
+        // });
+      } else if (key === '37') {    
+      setInterval(() => {client.write("Move: left")}, t);
+      // client.on("connect", () => {
+        // });
+    }
+  });
+
 };
+
+stdin.on("data", handleUserInput);
+
+
+
+
 
 
 /*
